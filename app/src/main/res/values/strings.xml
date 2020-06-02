@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">HoneyIAmHome</string>
+    <string name="start_tracking_location">Start tracking location</string>
+    <string name="stop_tracking_location">Stop tracking location</string>
+    <string name="latitude">Latitude:</string>
+    <string name="longitude">Longitude:</string>
+    <string name="accuracy">Accuracy:</string>
+    <string name="your_home_location">Your Home Location:</string>
+    <string name="set_home_location">Set home location</string>
+    <string name="clear_home">Clear Home</string>
+    <string name="your_current_location">Your current location</string>
+    <string name="dialog_message">We need your location permission in order to track  yor location</string>
+    <string name="dialog_title">Location permission Approval</string>
+    <string name="cancel">Cancel</string>
+</resources>
