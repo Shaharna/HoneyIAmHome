@@ -18,12 +18,56 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+
     private static final int REQUEST_CODE_PERMISSION_LOCATION = 1546;
     LocationTracker _locationTracker;
+    private boolean isTracking = false;
+    private BroadcastReceiver startReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null) {
+                return;
+            }
+            if (intent.getAction() != "started") {
+                return;
+            }
+            ShowLocationOnScreen();
+        }
+    };
+
+    private BroadcastReceiver changeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null) {
+                return;
+            }
+            Button buttonSetHome = findViewById(R.id.main_set_homeLocation);
+            if (intent.getAction() != "new_location") {
+                return;
+            }
+            ShowLocationOnScreen();
+            if (_locationTracker.getLocationInfo().getAccuracy() < 50) {
+                buttonSetHome.setVisibility(View.VISIBLE);
+            }
+        }
+    };
+    private BroadcastReceiver stopReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null) {
+                return;
+            }
+            if (intent.getAction() != "stopped") {
+                return;
+            }
+            StartStopTrackBtnChange(R.string.start_tracking_location, R.color.colorGreenStart);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,14 +75,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final Button buttonStartTrack = findViewById(R.id.main_start_tracking);
-        final Button buttonStopTrack = findViewById(R.id.main_stop_tracking);
         final Button buttonSetHome = findViewById(R.id.main_set_homeLocation);
         final Button buttonClearHome = findViewById(R.id.main_clear_homeLocation);
+        final TextView yourLocationHeader = findViewById(R.id.mainActivity_currentLocationHeader);
+        final TextView latitudeHeader = findViewById(R.id.mainActivity_latitudeHeader);
+        final TextView latitudeField = findViewById(R.id.mainActivity_latitudeField);
+        final TextView longitudeHeader = findViewById(R.id.mainActivity_longitudeHeader);
+        final TextView longitudeField = findViewById(R.id.mainActivity_longitudeField);
+        final TextView accuracyHeader = findViewById(R.id.mainActivity_accuracyHeader);
+        final TextView accuracyField = findViewById(R.id.mainActivity_accuracyField);
         final TextView homeHeader = findViewById(R.id.main_homeHeader);
         final TextView homeField = findViewById(R.id.main_homeField);
+        final ImageView homeChecked = findViewById(R.id.main_home_checked);
 
         final MainActivity activity = this;
-        LocationManager  manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         _locationTracker = LocationTracker.getInstance(this, manager);
 
         registerReceiver(startReceiver, new IntentFilter("started"));
@@ -48,6 +99,13 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         final double homeLatitude = sp.getFloat("home_latitude", 0);
         final double homeLongitude = sp.getFloat("home_longitude", 0);
+        if (homeLatitude != 0 && homeLongitude != 0) {
+            // the sp is not empty and we are tracking
+            // todo checker
+            homeField.setText("< " + homeLatitude + ", " + homeLongitude + " >");
+            HomeInfoVisibility(homeHeader, homeField, buttonClearHome, View.VISIBLE);
+            buttonSetHome.setVisibility(View.VISIBLE);
+        }
 
         buttonStartTrack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,15 +115,21 @@ public class MainActivity extends AppCompatActivity {
                                 Manifest.permission.ACCESS_FINE_LOCATION) ==
                                 PackageManager.PERMISSION_GRANTED;
                 if (hasLocationPermission) {
-                    if (homeLatitude != 0 && homeLongitude != 0)
-                    {
-                        homeHeader.setVisibility(View.VISIBLE);
-                        homeField.setVisibility(View.VISIBLE);
-                        buttonClearHome.setVisibility(View.VISIBLE);
-
+                    isTracking = !isTracking;
+                    if (isTracking) {
+                        LocationInfoVisibility(yourLocationHeader, latitudeHeader, latitudeField,
+                                longitudeHeader, longitudeField, accuracyHeader, accuracyField,
+                                View.VISIBLE);
+                        StartStopTrackBtnChange(R.string.stop_tracking_location, R.color.colorRedStop);
+                        startTrack();
+                    } else {
+                        LocationInfoVisibility(yourLocationHeader, latitudeHeader, latitudeField,
+                                longitudeHeader, longitudeField, accuracyHeader, accuracyField,
+                                View.INVISIBLE);
+                        HomeInfoVisibility(homeHeader, homeField, buttonClearHome, View.VISIBLE);
+                        buttonSetHome.setVisibility(View.INVISIBLE);
+                        stopTrack();
                     }
-                    buttonSetHome.setVisibility(View.VISIBLE);
-                    startTrack();
                 } else {
                     ActivityCompat.requestPermissions(
                             activity,
@@ -78,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
         buttonSetHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
                 SharedPreferences.Editor editor = sp.edit();
                 double homeLatitude = _locationTracker.getLocationInfo().getLatitude();
@@ -87,15 +152,55 @@ public class MainActivity extends AppCompatActivity {
                 editor.putFloat("home_longitude", (float) homeLongitude);
                 editor.apply();
 
-                homeField.setText("< "+homeLatitude+", "+homeLongitude+" >");
-                homeHeader.setVisibility(View.VISIBLE);
-                homeField.setVisibility(View.VISIBLE);
-                buttonClearHome.setVisibility(View.VISIBLE);
+                homeField.setText("< " + homeLatitude + ", " + homeLongitude + " >");
+                HomeInfoVisibility(homeHeader, homeField, buttonClearHome, View.VISIBLE);
+            }
+        });
 
+        buttonClearHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.clear();
+                editor.apply();
+
+                homeField.setText("");
+                HomeInfoVisibility(homeHeader, homeField, buttonClearHome, View.INVISIBLE);
             }
         });
 
     }
+
+    private void HomeInfoVisibility(TextView homeHeader, TextView homeField, Button buttonClearHome,
+                                    int visibility)
+    {
+        homeHeader.setVisibility(visibility);
+        homeField.setVisibility(visibility);
+        buttonClearHome.setVisibility(visibility);
+    }
+
+    private void LocationInfoVisibility(TextView yourLocationHeader, TextView latitudeHeader,
+                                        TextView latitudeField, TextView longitudeHeader,
+                                        TextView longitudeField, TextView accuracyHeader,
+                                        TextView accuracyField, int visibility) {
+
+        yourLocationHeader.setVisibility(visibility);
+        latitudeHeader.setVisibility(visibility);
+        latitudeField.setVisibility(visibility);
+        longitudeHeader.setVisibility(visibility);
+        longitudeField.setVisibility(visibility);
+        accuracyHeader.setVisibility(visibility);
+        accuracyField.setVisibility(visibility);
+    }
+
+    private void StartStopTrackBtnChange(int p, int p2) {
+        Button buttonStartTrack = findViewById(R.id.main_start_tracking);
+        buttonStartTrack.setText(p);
+        buttonStartTrack.setBackgroundColor(getResources().getColor(p2));
+    }
+
 
     @Override
     public void onRequestPermissionsResult(
@@ -139,85 +244,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private BroadcastReceiver startReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent == null) {
-                return;
-            }
-            if (intent.getAction() != "started") {
-                return;
-
-            }
-            double curLatitude = _locationTracker.getLocationInfo().getLatitude();
-            double curLongitude = _locationTracker.getLocationInfo().getLongitude();
-            float curAccuracy = _locationTracker.getLocationInfo().getAccuracy();
-            TextView latitude = findViewById(R.id.mainActivity_latitudeField);
-            TextView longitude = findViewById(R.id.mainActivity_longitudeField);
-            TextView accuracy = findViewById(R.id.mainActivity_accuracyField);
-
-            latitude.setText(String.format("%f",curLatitude));
-            longitude.setText(String.format("%f",curLongitude));
-            accuracy.setText(String.format("%f",curAccuracy));
-
-            Button buttonStartTrack = findViewById(R.id.main_start_tracking);
-            Button buttonStopTrack = findViewById(R.id.main_stop_tracking);
-            buttonStartTrack.setVisibility(View.INVISIBLE);
-            buttonStopTrack.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private BroadcastReceiver changeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent == null){
-                return;
-            }
-            Button buttonSetHome = findViewById(R.id.main_set_homeLocation);
-            if (intent.getAction() != "new_location"){
-                return;
-            }
-            double curLatitude = _locationTracker.getLocationInfo().getLatitude();
-            double curLongitude = _locationTracker.getLocationInfo().getLongitude();
-            float curAccuracy = _locationTracker.getLocationInfo().getAccuracy();
-            TextView latitude = findViewById(R.id.mainActivity_latitudeField);
-            TextView longitude = findViewById(R.id.mainActivity_longitudeField);
-            TextView accuracy = findViewById(R.id.mainActivity_accuracyField);
-
-            latitude.setText(String.format("%f",curLatitude));
-            longitude.setText(String.format("%f",curLongitude));
-            accuracy.setText(String.format("%f",curAccuracy));
-            if(_locationTracker.getLocationInfo().getAccuracy() < 50)
-            {
-                buttonSetHome.setVisibility(View.VISIBLE);
-            }
-        }
-    };
-
-    private BroadcastReceiver stopReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent == null){
-                return;
-            }
-            Button buttonStartTrack = findViewById(R.id.main_start_tracking);
-            Button buttonStopTrack = findViewById(R.id.main_stop_tracking);
-            if (intent.getAction() != "stopped"){
-                return;
-            }
-            buttonStopTrack.setVisibility(View.INVISIBLE);
-            buttonStartTrack.setVisibility(View.VISIBLE);
-        }
-    };
-
     private void startTrack() {
-        TextView homeHeader = findViewById(R.id.main_homeHeader);
-        TextView homeField = findViewById(R.id.main_homeField);
-        if(homeHeader.getVisibility() == View.VISIBLE && homeField.getVisibility()==View.VISIBLE)
-        {
-
-        }
         _locationTracker.startTracking(MainActivity.this);
     }
 
+    private void stopTrack() {
+        _locationTracker.stopTracking();
+    }
+
+    private void ShowLocationOnScreen() {
+
+        double curLatitude = _locationTracker.getLocationInfo().getLatitude();
+        double curLongitude = _locationTracker.getLocationInfo().getLongitude();
+        float curAccuracy = _locationTracker.getLocationInfo().getAccuracy();
+        TextView latitude = findViewById(R.id.mainActivity_latitudeField);
+        TextView longitude = findViewById(R.id.mainActivity_longitudeField);
+        TextView accuracy = findViewById(R.id.mainActivity_accuracyField);
+
+        latitude.setText(String.format("%f", curLatitude));
+        longitude.setText(String.format("%f", curLongitude));
+        accuracy.setText(String.format("%f", curAccuracy));
+    }
 }

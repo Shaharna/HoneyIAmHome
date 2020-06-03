@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import androidx.core.app.ActivityCompat;
 
 
@@ -18,9 +17,6 @@ public class LocationTracker {
     private Context _context;
     private LocationInfo _locationInfo;
     private static LocationTracker single_instance = null;
-
-    // variable of type String
-    public String s;
 
     // static method to create instance of Singleton class
     static LocationTracker getInstance(Context context, LocationManager manager)
@@ -48,8 +44,6 @@ public class LocationTracker {
             _locationInfo.setLatitude(latitude);
             _locationInfo.setLongitude(longitude);
             _locationInfo.setAccuracy(accuracy);
-            Log.d("LocationTracker", String.valueOf(latitude));
-            Log.d("LocationTracker", String.valueOf(longitude));
 
             Intent intent = new Intent();
             intent.setAction("new_location");
@@ -88,15 +82,16 @@ public class LocationTracker {
             intent.setAction("started");
             _context.sendBroadcast(intent);
             this.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListenerGPS);
-
         }
     }
 
     void stopTracking(){
+        locationManager.removeUpdates(locationListenerGPS);
         Intent intent = new Intent();
         intent.setAction("stopped");
         _context.sendBroadcast(intent);
     }
+
     LocationInfo getLocationInfo(){
         return _locationInfo;
     }

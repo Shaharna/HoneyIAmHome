@@ -6,7 +6,7 @@
     <string name="longitude">Longitude:</string>
     <string name="accuracy">Accuracy:</string>
     <string name="your_home_location">Your Home Location:</string>
-    <string name="set_home_location">Set home location</string>
+    <string name="set_home_location">Set location as Home</string>
     <string name="clear_home">Clear Home</string>
     <string name="your_current_location">Your current location</string>
     <string name="dialog_message">We need your location permission in order to track  yor location</string>
