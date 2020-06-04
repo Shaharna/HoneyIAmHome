@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 LocationInfoVisibility(yourLocationHeader, latitudeHeader, latitudeField,
                         longitudeHeader, longitudeField, accuracyHeader, accuracyField,
                         View.INVISIBLE);
-                HomeInfoVisibility(homeHeader, homeField, buttonClearHome, View.VISIBLE);
+                restoreHomeInfo();
                 buttonSetHome.setVisibility(View.INVISIBLE);
                 stopTrack();
             }
@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
                 homeField.setText("");
                 HomeInfoVisibility(homeHeader, homeField, buttonClearHome, View.INVISIBLE);
+                buttonSetHome.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -266,15 +267,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        stopTrack();
+        final Button buttonStartTrack = findViewById(R.id.main_start_tracking);
+        if (buttonStartTrack.getVisibility() == View.INVISIBLE)
+        {
+            stopTrack();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         restoreHomeInfo();
-        startTrack();
+        final Button buttonStartTrack = findViewById(R.id.main_start_tracking);
+        if (buttonStartTrack.getVisibility() == View.INVISIBLE)
+        {
+            startTrack();
+        }
     }
 
     private void restoreHomeInfo() {
@@ -288,7 +296,6 @@ public class MainActivity extends AppCompatActivity {
         final double homeLongitude = sp.getFloat("home_longitude", 0);
         if (homeLatitude != 0 && homeLongitude != 0) {
             // the sp is not empty and we are tracking
-            // todo checker
             homeField.setText("< " + homeLatitude + ", " + homeLongitude + " >");
             HomeInfoVisibility(homeHeader, homeField, buttonClearHome, View.VISIBLE);
             buttonSetHome.setVisibility(View.VISIBLE);
