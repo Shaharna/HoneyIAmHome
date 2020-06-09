@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private boolean wasTracking;
     private static final int REQUEST_CODE_PERMISSION_LOCATION = 1546;
     LocationTracker _locationTracker;
     private BroadcastReceiver startReceiver = new BroadcastReceiver() {
@@ -96,6 +96,19 @@ public class MainActivity extends AppCompatActivity {
 
         restoreHomeInfo();
 
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        wasTracking= sp.getBoolean("wasTracking", false);
+
+        if (wasTracking)
+        {
+            buttonStartTrack.setVisibility(View.INVISIBLE);
+            buttonStopTrack.setVisibility(View.VISIBLE);
+            LocationInfoVisibility(yourLocationHeader, latitudeHeader, latitudeField,
+                    longitudeHeader, longitudeField, accuracyHeader, accuracyField,
+                    View.VISIBLE);
+            startTrack();
+        }
+
         buttonStartTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 restoreHomeInfo();
                 buttonSetHome.setVisibility(View.INVISIBLE);
                 stopTrack();
+                wasTracking = false;
             }
         });
 
@@ -235,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startTrack() {
+        wasTracking = true;
         _locationTracker.startTracking(MainActivity.this);
     }
 
@@ -259,6 +274,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean("wasTracking", wasTracking);
+        editor.apply();
+
         unregisterReceiver(startReceiver);
         unregisterReceiver(stopReceiver);
         unregisterReceiver(changeReceiver);
@@ -267,8 +288,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        final Button buttonStartTrack = findViewById(R.id.main_start_tracking);
-        if (buttonStartTrack.getVisibility() == View.INVISIBLE)
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean("wasTracking", wasTracking);
+        editor.apply();
+        if (wasTracking)
         {
             stopTrack();
         }
@@ -278,8 +302,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         restoreHomeInfo();
-        final Button buttonStartTrack = findViewById(R.id.main_start_tracking);
-        if (buttonStartTrack.getVisibility() == View.INVISIBLE)
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        wasTracking= sp.getBoolean("wasTracking", false);
+        if (wasTracking)
         {
             startTrack();
         }

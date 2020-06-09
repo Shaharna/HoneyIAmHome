@@ -13,7 +13,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:text="@string/your_home_location"
         android:textSize="22sp"
@@ -26,7 +25,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/main_homeHeader"
-        android:layout_marginTop="16dp"
         android:visibility="invisible"/>
 
     <Button
@@ -37,7 +35,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/main_set_homeLocation"
         app:layout_constraintTop_toBottomOf="@id/main_homeField"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
         android:padding="5dp"
         android:background="@color/colorSetHomeLocation"
@@ -51,7 +48,6 @@
         app:layout_constraintStart_toEndOf="@id/main_clear_homeLocation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/main_homeField"
-        android:layout_marginTop="16dp"
         android:padding="5dp"
         android:background="@color/colorSetHomeLocation"
         android:visibility="invisible"/>
@@ -64,7 +60,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/main_set_homeLocation"
         android:text="@string/your_current_location"
-        android:layout_marginTop="48dp"
         android:textSize="22sp"
         android:visibility="invisible"/>
 
@@ -74,10 +69,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/mainActivity_latitudeField"
         app:layout_constraintTop_toBottomOf="@id/mainActivity_currentLocationHeader"
         android:text="@string/latitude"
-        android:layout_marginTop="8dp"
         android:textSize="20sp"
         android:visibility="invisible"/>
 
@@ -85,10 +79,9 @@
         android:id="@+id/mainActivity_latitudeField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/mainActivity_currentLocationHeader"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainActivity_latitudeHeader"
-        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/mainActivity_latitudeHeader"
         android:visibility="invisible"/>
 
     <TextView
@@ -96,10 +89,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mainActivity_latitudeField"
+        app:layout_constraintEnd_toStartOf="@+id/mainActivity_longitudeField"
         android:text="@string/longitude"
-        android:layout_marginTop="8dp"
         android:textSize="20sp"
         android:visibility="invisible"/>
 
@@ -107,10 +99,9 @@
         android:id="@+id/mainActivity_longitudeField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mainActivity_latitudeField"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainActivity_longitudeHeader"
-        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@id/mainActivity_latitudeHeader"
         android:visibility="invisible"/>
 
     <TextView
@@ -118,10 +109,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/mainActivity_accuracyField"
         app:layout_constraintTop_toBottomOf="@id/mainActivity_longitudeField"
         android:text="@string/accuracy"
-        android:layout_marginTop="8dp"
         android:textSize="20sp"
         android:visibility="invisible"/>
 
@@ -129,10 +119,9 @@
         android:id="@+id/mainActivity_accuracyField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/mainActivity_accuracyHeader"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainActivity_accuracyHeader"
-        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/mainActivity_longitudeField"
         android:visibility="invisible"/>
 
     <Button
@@ -145,8 +134,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mainActivity_accuracyField"
         android:background="@color/colorGreenStart"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
@@ -159,8 +146,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mainActivity_accuracyField"
         android:background="@color/colorRedStop"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="invisible"/>
 
