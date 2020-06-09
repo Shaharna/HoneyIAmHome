@@ -287,7 +287,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void restoreHomeInfo() {
 
-        final Button buttonSetHome = findViewById(R.id.main_set_homeLocation);
         final Button buttonClearHome = findViewById(R.id.main_clear_homeLocation);
         final TextView homeHeader = findViewById(R.id.main_homeHeader);
         final TextView homeField = findViewById(R.id.main_homeField);
@@ -298,7 +297,6 @@ public class MainActivity extends AppCompatActivity {
             // the sp is not empty and we are tracking
             homeField.setText("< " + homeLatitude + ", " + homeLongitude + " >");
             HomeInfoVisibility(homeHeader, homeField, buttonClearHome, View.VISIBLE);
-            buttonSetHome.setVisibility(View.VISIBLE);
         }
     }
 }
