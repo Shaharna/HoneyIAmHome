@@ -68,6 +68,13 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("was_tracking",wasTracking);
+    }
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -96,8 +103,12 @@ public class MainActivity extends AppCompatActivity {
 
         restoreHomeInfo();
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        wasTracking= sp.getBoolean("wasTracking", false);
+        if(savedInstanceState == null) {
+            wasTracking = false;
+        }
+        else{
+            wasTracking  = savedInstanceState.getBoolean("was_tracking");
+        }
 
         if (wasTracking)
         {
@@ -275,10 +286,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putBoolean("wasTracking", wasTracking);
-        editor.apply();
 
         unregisterReceiver(startReceiver);
         unregisterReceiver(stopReceiver);
@@ -288,10 +295,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putBoolean("wasTracking", wasTracking);
-        editor.apply();
         if (wasTracking)
         {
             stopTrack();
@@ -302,8 +305,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         restoreHomeInfo();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        wasTracking= sp.getBoolean("wasTracking", false);
         if (wasTracking)
         {
             startTrack();
