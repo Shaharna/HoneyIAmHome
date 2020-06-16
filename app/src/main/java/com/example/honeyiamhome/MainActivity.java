@@ -16,10 +16,16 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
         outState.putBoolean("was_tracking",wasTracking);
     }
 
+    private static  String PHONE = "+972545425015";
+    private static  String CONTENT ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         final Button buttonStopTrack = findViewById(R.id.main_stop_tracking);
         final Button buttonSetHome = findViewById(R.id.main_set_homeLocation);
         final Button buttonClearHome = findViewById(R.id.main_clear_homeLocation);
+        final Button buttonSetSMSNumber = findViewById(R.id.main_set_phone_number);
         final TextView yourLocationHeader = findViewById(R.id.mainActivity_currentLocationHeader);
         final TextView latitudeHeader = findViewById(R.id.mainActivity_latitudeHeader);
         final TextView latitudeField = findViewById(R.id.mainActivity_latitudeField);
@@ -119,6 +128,68 @@ public class MainActivity extends AppCompatActivity {
                     View.VISIBLE);
             startTrack();
         }
+
+        buttonSetSMSNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean hasSMSPermission =
+                        ActivityCompat.checkSelfPermission(activity,
+                                Manifest.permission.ACCESS_FINE_LOCATION) ==
+                                PackageManager.PERMISSION_GRANTED;
+                if (hasSMSPermission) {
+
+                    View activity_main = findViewById(R.id.main_activity);
+                    LayoutInflater layoutInflater = (LayoutInflater)
+                            MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    View customView = layoutInflater.inflate(R.layout.popup_window, null);
+
+                    Button cancelBtn = customView.findViewById(R.id.popup_cancel_btn);
+                    Button setBtn = customView.findViewById(R.id.popup_set_btn);
+                    final EditText editText = customView.findViewById(R.id.popup_edit_field);
+
+                    //instantiate popup window
+                    final PopupWindow popupWindow = new PopupWindow(customView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                    //display the popup window
+                    popupWindow.showAtLocation(activity_main, Gravity.CENTER, 0, 0);
+
+                    //close the popup window on button click
+                    cancelBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            popupWindow.dismiss();
+                        }
+                    });
+                    setBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            PHONE = editText.getText().toString();
+                            SharedPreferences sp =
+                                    PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString("phone_num", PHONE);
+                            editor.apply();
+
+                            popupWindow.dismiss();
+
+                            Context context = getApplicationContext();
+                            CharSequence text = "Phone number set";
+                            int duration = Toast.LENGTH_SHORT;
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        }
+                    });
+                } else {
+                    ActivityCompat.requestPermissions(
+                            activity,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            REQUEST_CODE_PERMISSION_LOCATION);
+
+
+                }
+            }
+        });
 
         buttonStartTrack.setOnClickListener(new View.OnClickListener() {
             @Override

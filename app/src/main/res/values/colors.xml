@@ -6,5 +6,6 @@
     <color name="colorGreenStart">#86eba1</color>
     <color name="colorRedStop">#fa504d</color>
     <color name="colorSetHomeLocation">#d6ccff</color>
-
+    <color name="colorSecondary">#ff965e</color>
+    <color name="colorSecondaryDark">#ff804a</color>
 </resources>

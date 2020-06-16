@@ -12,4 +12,8 @@
     <string name="dialog_message">We need your location permission in order to track  yor location</string>
     <string name="dialog_title">Location permission Approval</string>
     <string name="cancel">Cancel</string>
+    <string name="set_sms_phone_number">set SMS phone number</string>
+    <string name="popup_cancel">Cancel</string>
+    <string name="popup_set">Set</string>
+    <string name="popup_write_phone_here">Write phone num here</string>
 </resources>
