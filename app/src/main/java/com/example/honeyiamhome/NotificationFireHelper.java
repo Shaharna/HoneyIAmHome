@@ -44,10 +44,10 @@ public class NotificationFireHelper {
 
     private void  actualFire(String phoneNum, String smsContent)
     {
-        String content = String.format("sending sms to <%s>: <t%s>", phoneNum, smsContent);
+        String content = String.format("sending sms to <%s>: <%s>", phoneNum, smsContent);
 
         NotificationCompat.Builder builder  = new NotificationCompat.Builder(_context, channelId)
-                //.setSmallIcon(R.)
+                .setSmallIcon(R.drawable.icon)
                 .setContentText(content)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 

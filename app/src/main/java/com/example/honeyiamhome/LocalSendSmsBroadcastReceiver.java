@@ -12,8 +12,12 @@ import androidx.core.app.ActivityCompat;
 
 public class LocalSendSmsBroadcastReceiver extends BroadcastReceiver {
 
-    private static final int REQUEST_CODE_PERMISSION_SMS = 1545;
+
+    private static  String PHONE = "phone";
+    private static  String CONTENT ="content";
+    private static String ACTION_SEND_SMS = "send sms";
     public static final String LOG_TAG = "SEND_SMS_BROADCAST";
+    private NotificationFireHelper _notificationFireHelper;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -21,9 +25,14 @@ public class LocalSendSmsBroadcastReceiver extends BroadcastReceiver {
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) ==
                         PackageManager.PERMISSION_GRANTED;
 
-
         if (hasSmsPermission) {
-            sendSms(intent);
+            if (intent == null) {
+                return;
+            }
+            if (intent.getAction() != ACTION_SEND_SMS) {
+                return;
+            }
+            sendSms(intent, context);
         } else {
             Log.e(LOG_TAG, "Permission denied");
             return;
@@ -55,9 +64,11 @@ public class LocalSendSmsBroadcastReceiver extends BroadcastReceiver {
 //        }
 //    }
 
-    private void sendSms(Intent intent) {
-        String phoneNum = intent.getStringExtra("phone");
-        String content = intent.getStringExtra("content");
+    private void sendSms(Intent intent, Context context) {
+
+        String phoneNum = intent.getStringExtra(PHONE);
+        String content = intent.getStringExtra(CONTENT);
+        _notificationFireHelper = new NotificationFireHelper(context, phoneNum, content);
         if ((phoneNum==null) || (phoneNum.equals("")) || (content==null) || (content.equals(""))) {
             Log.e(LOG_TAG, "Empty phone number or content");
             return;
@@ -69,7 +80,6 @@ public class LocalSendSmsBroadcastReceiver extends BroadcastReceiver {
                 null,
                 null);
     }
-
 }
 
 

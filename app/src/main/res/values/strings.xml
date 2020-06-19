@@ -9,11 +9,14 @@
     <string name="set_home_location">Set location as Home</string>
     <string name="clear_home">Clear Home</string>
     <string name="your_current_location">Your current location</string>
-    <string name="dialog_message">We need your location permission in order to track  yor location</string>
-    <string name="dialog_title">Location permission Approval</string>
+    <string name="dialog_location_message">We need your location permission in order to track  yor location</string>
+    <string name="dialog_sms_message">We need your sms permission in order to use this app</string>
+    <string name="dialog_location_title">Location permission Approval</string>
+    <string name="dialog_sms_title">SMS permission Approval</string>
     <string name="cancel">Cancel</string>
-    <string name="set_sms_phone_number">set SMS phone number</string>
+    <string name="set_sms_phone_number">set SMS phone</string>
     <string name="popup_cancel">Cancel</string>
     <string name="popup_set">Set</string>
     <string name="popup_write_phone_here">Write phone num here</string>
+    <string name="delete_phone">Delete phone</string>
 </resources>

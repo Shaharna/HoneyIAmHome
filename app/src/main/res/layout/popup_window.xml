@@ -27,8 +27,11 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_margin="32dp"
         android:textSize="20sp"
-        android:importantForAutofill="no"
-        android:hint="@string/popup_write_phone_here"/>
+        android:hint="@string/popup_write_phone_here"
+        android:scrollHorizontally="true"
+        android:focusableInTouchMode="true"
+        android:autofillHints=""
+        android:inputType="phone" />
 
     <Button
         android:id="@+id/popup_set_btn"

@@ -72,10 +72,10 @@ public class LocationTracker {
         }
     };
 
-    void startTracking(Activity activity){
+    void startTracking(){
         //a basic check that assert you have the runtime location permission.
         boolean hasLocationPermission =
-                ActivityCompat.checkSelfPermission(activity,
+                ActivityCompat.checkSelfPermission(_context,
                         Manifest.permission.ACCESS_FINE_LOCATION) ==
                         PackageManager.PERMISSION_GRANTED;
         if (hasLocationPermission) {

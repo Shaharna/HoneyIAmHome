@@ -157,11 +157,21 @@
         android:text="@string/set_sms_phone_number"
         android:padding="10dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/main_delete_phone_number"
+        app:layout_constraintTop_toBottomOf="@id/main_stop_tracking"
+        android:background="@color/colorSetHomeLocation"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
+        android:id="@+id/main_delete_phone_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/delete_phone"
+        android:padding="10dp"
+        app:layout_constraintStart_toEndOf="@id/main_set_phone_number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/main_stop_tracking"
         android:background="@color/colorSetHomeLocation"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
