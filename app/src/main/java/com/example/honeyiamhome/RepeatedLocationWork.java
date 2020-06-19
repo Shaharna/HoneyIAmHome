@@ -1,33 +1,28 @@
 package com.example.honeyiamhome;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 import androidx.core.app.ActivityCompat;
-import androidx.work.Data;
 import androidx.work.ListenableWorker;
-import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import javax.security.auth.callback.Callback;
-
 
 public class RepeatedLocationWork extends ListenableWorker {
 
     private static final String LAST_LOCATION_LATITUDE = "last_location_latitude";
     private static final String LAST_LOCATION_LONGITUDE = "last_location_longitude";
-    public static final String HONEY_I_M_HOME = "Honey I'm Home!";
+    private static final String HONEY_I_M_HOME = "Honey I'm Home!";
     private static String ACTION_SEND_SMS = "send sms";
     private static String PHONE = "phone";
     private static  String CONTENT ="content";
@@ -111,13 +106,15 @@ public class RepeatedLocationWork extends ListenableWorker {
                     double previousLongitude = sp.getFloat(LAST_LOCATION_LONGITUDE, 0);
                     double currentLatitude = _locationTracker.getLocationInfo().getLatitude();
                     double currentLongitude = _locationTracker.getLocationInfo().getLongitude();
-                        if ((Math.abs(previousLatitude - currentLatitude) > 50)
-                                || (Math.abs(previousLongitude - currentLongitude) > 50)) {
+                    float [] res = new float[1];
+                    Location.distanceBetween(previousLatitude, previousLongitude, currentLatitude, currentLongitude,res);
+                        if (res[0] > 50) {
                             double homeLatitude = sp.getFloat(HOME_LATITUDE, 0);
                             double homeLongitude = sp.getFloat(HOME_LONGITUDE, 0);
                             if (homeLatitude != 0 && homeLongitude != 0) {
-                                if ((Math.abs(homeLatitude - currentLatitude) < 50)
-                                        || (Math.abs(homeLongitude - currentLongitude) < 50)) {
+                                Location.distanceBetween(homeLatitude, homeLongitude, currentLatitude, currentLongitude,res);
+                                if (res[0] < 50)
+                                {
                                     String phone = sp.getString(PHONE, "");
                                     Intent smsIntent = new Intent();
                                     smsIntent.setAction(ACTION_SEND_SMS);
