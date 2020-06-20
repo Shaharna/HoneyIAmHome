@@ -108,13 +108,13 @@ public class RepeatedLocationWork extends ListenableWorker {
                     double currentLongitude = _locationTracker.getLocationInfo().getLongitude();
                     float [] res = new float[1];
                     Location.distanceBetween(previousLatitude, previousLongitude, currentLatitude, currentLongitude,res);
+                    if (previousLatitude != 0 && previousLongitude !=0) {
                         if (res[0] > 50) {
                             double homeLatitude = sp.getFloat(HOME_LATITUDE, 0);
                             double homeLongitude = sp.getFloat(HOME_LONGITUDE, 0);
                             if (homeLatitude != 0 && homeLongitude != 0) {
-                                Location.distanceBetween(homeLatitude, homeLongitude, currentLatitude, currentLongitude,res);
-                                if (res[0] < 50)
-                                {
+                                Location.distanceBetween(homeLatitude, homeLongitude, currentLatitude, currentLongitude, res);
+                                if (res[0] < 50) {
                                     String phone = sp.getString(PHONE, "");
                                     Intent smsIntent = new Intent();
                                     smsIntent.setAction(ACTION_SEND_SMS);
@@ -124,6 +124,7 @@ public class RepeatedLocationWork extends ListenableWorker {
                                 }
                             }
                         }
+                    }
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putFloat(LAST_LOCATION_LATITUDE, (float) currentLatitude);
                     editor.putFloat(LAST_LOCATION_LONGITUDE, (float) currentLongitude);
